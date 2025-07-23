@@ -1,0 +1,96 @@
+'''
+create a python program that can encrypt and decrypt text using the ceasor cipher algorithm.
+Allow users to input a message and a shift value to perform encryption and decryption. 
+
+'''
+
+
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+
+def caesar_cipher(text, shift, mode):
+    result = ''
+    for char in text:
+        if char.isalpha():
+            shifted = ord(char) + shift if mode == 'encrypt' else ord(char) - shift
+            if char.islower():
+                if shifted > ord('z'):
+                    shifted -= 26
+                elif shifted < ord('a'):
+                    shifted += 26
+            elif char.isupper():
+                if shifted > ord('Z'):
+                    shifted -= 26
+                elif shifted < ord('A'):
+                    shifted += 26
+            result += chr(shifted)
+        else:
+            result += char
+    return result
+
+def encrypt_decrypt():
+    text = input_text.get("1.0", "end-1c")
+    try:
+        shift = int(shift_entry.get())
+    except ValueError:
+        messagebox.showerror("Error", "Shift value must be an integer.")
+        return
+
+    mode = mode_var.get()
+    if mode not in ['encrypt', 'decrypt']:
+        messagebox.showerror("Error", "Invalid mode! Please choose 'encrypt' or 'decrypt'.")
+        return
+
+    result = caesar_cipher(text, shift, mode)
+    output_text.delete("1.0", "end")
+    output_text.insert("end", result)
+
+def on_enter(event=None):
+    encrypt_button.configure(bg="#ffb300")
+
+def on_leave(event=None):
+    encrypt_button.configure(bg="#ffc107")
+
+root = tk.Tk()
+root.title("Caesar Cipher - Yellow Theme")
+root.configure(background="#fff9c4")  # light yellow
+
+# Style configuration
+style = ttk.Style()
+style.configure("Yellow.TFrame", background="#fff9c4")
+style.configure("Yellow.TLabel", background="#fff9c4", font=("Arial", 12))
+style.configure("Yellow.TButton", background="#ffc107", foreground="black", font=("Arial", 12, "bold"))
+
+main_frame = ttk.Frame(root, padding="20", style="Yellow.TFrame")
+main_frame.grid(row=0, column=0, sticky="nsew")
+
+# Input Message
+ttk.Label(main_frame, text="Enter the message:", style="Yellow.TLabel").grid(row=0, column=0, sticky="w")
+input_text = tk.Text(main_frame, height=5, width=40, bg="#fffde7", font=("Arial", 11))
+input_text.grid(row=1, column=0, columnspan=3, pady=5, sticky="w")
+
+# Shift Value
+ttk.Label(main_frame, text="Enter the shift value:", style="Yellow.TLabel").grid(row=2, column=0, sticky="w")
+shift_entry = ttk.Entry(main_frame, width=10)
+shift_entry.grid(row=2, column=1, pady=5, sticky="w")
+
+# Encrypt/Decrypt mode
+ttk.Label(main_frame, text="Select mode:", style="Yellow.TLabel").grid(row=3, column=0, sticky="w")
+mode_var = tk.StringVar(value="encrypt")
+mode_combobox = ttk.Combobox(main_frame, textvariable=mode_var, values=["encrypt", "decrypt"], width=10)
+mode_combobox.grid(row=3, column=1, pady=5, sticky="w")
+
+# Encrypt Button
+encrypt_button = tk.Button(main_frame, text="Encrypt / Decrypt", command=encrypt_decrypt,
+                           bg="#ffc107", fg="black", font=("Arial", 12, "bold"), relief="raised")
+encrypt_button.grid(row=4, column=0, columnspan=2, pady=10)
+encrypt_button.bind("<Enter>", on_enter)
+encrypt_button.bind("<Leave>", on_leave)
+
+# Output Label and Box
+ttk.Label(main_frame, text="Result:", style="Yellow.TLabel").grid(row=5, column=0, sticky="w")
+output_text = tk.Text(main_frame, height=5, width=40, bg="#fffde7", font=("Arial", 11))
+output_text.grid(row=6, column=0, columnspan=3, pady=5, sticky="w")
+
+root.mainloop()
